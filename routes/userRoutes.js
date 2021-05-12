@@ -30,7 +30,7 @@ router.post(
       await user
         .save()
         .then(() => {
-          sendEmail(req.body.Email, randCode);
+          sendEmail(req.body.Email, req.body.Name, randCode);
           res.json("User saved and email sent");
         })
         .catch((error) => {

@@ -12,7 +12,7 @@ const refreshToken =
 const OauthClient = new google.auth.OAuth2(clientID, clientSecret, redirectURI);
 OauthClient.setCredentials({ refresh_token: refreshToken });
 
-const sendEmail = async (emailAddress, activationCode) => {
+const sendEmail = async (emailAddress, name, activationCode) => {
   try {
     const accessToken = await OauthClient.getAccessToken();
     const transport = await nodeMailer.createTransport({
@@ -32,7 +32,7 @@ const sendEmail = async (emailAddress, activationCode) => {
       from: "SchoolBag <mycodecademypro2@gmail.com>",
       to: emailAddress,
       subject: "Verification SchoolBag",
-      html: emailTemplate(activationCode),
+      html: emailTemplate(name, activationCode),
     };
 
     await transport.sendMail(mailOptions, (err, res) => {
