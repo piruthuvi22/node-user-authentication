@@ -23,12 +23,15 @@ const UserSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  createdAt: {
+    type: Date,
+    expires: "5min",
+    default: Date.now,
+  },
+  ActivationCode: {
+    type: String,
+    required: true,
+  },
 });
-UserSchema.index(
-  { createdAt: 1 },
-  {
-    expireAfterSeconds: 24 * 60 * 60,
-    partialFilterExpression: { payed: false },
-  }
-);
+
 module.exports = mongoose.model("User", UserSchema);

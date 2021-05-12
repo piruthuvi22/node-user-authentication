@@ -20,8 +20,8 @@ let connection = mongoose.connect(uri, {
 connection
   .then(() => {
     app.listen(process.env.PORT, () => {
-      console.log("DB connection established");
-      console.log(`Listening on port ${process.env.PORT}`);
+      console.log("Database connection established");
+      console.log(`Server started on port ${process.env.PORT}`);
     });
   })
   .catch((err) => {
