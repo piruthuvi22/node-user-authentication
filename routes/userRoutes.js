@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const { nanoid } = require("nanoid");
+const bcrypt = require("bcryptjs");
 const User = require("../model/userSchema");
 const VerificationSchema = require("../model/verificationSchema");
 const auth = require("../middleware/auth");
@@ -83,7 +84,11 @@ router.post(
         );
         if (isMatch) {
           const userToken = await jwt.sign(
-            { Email: userData.Email, Name: userData.Name },
+            {
+              Email: userData.Email,
+              Name: userData.Name,
+              Username: userData.Username,
+            },
             process.env.JWT_KEY
           );
 
@@ -93,6 +98,7 @@ router.post(
         }
       }
     } catch (error) {
+      console.log(error);
       res.status(400).json(error);
     }
   }
