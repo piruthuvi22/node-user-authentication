@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
-var chance = require("chance").Chance();
+const { nanoid } = require("nanoid");
 const User = require("../model/userSchema");
 const VerificationSchema = require("../model/verificationSchema");
 const auth = require("../middleware/auth");
@@ -17,31 +17,20 @@ router.post(
   validateRegistration,
   async (req, res) => {
     try {
+      let randCode = nanoid(10) + Date.now();
       const user = new User({
         Name: req.body.Name,
         Username: req.body.Username,
         Email: req.body.Email,
         Password: req.hash,
+        ActivationCode: randCode,
       });
-      let randCode = chance.string({ length: 10 }) + Date.now();
-      const verify = new VerificationSchema({
-        Email: req.body.Email,
-        Code: randCode,
-      });
-      await verify
-        .save()
-        .then(() => {
-          console.log("saved in temp");
-          sendEmail(req.body.Email)
-            .then((result) => res.json(result))
-            .catch((err) => console.log(err));
-        })
-        .catch((err) => res.json(err));
 
       await user
         .save()
-        .then((data) => {
-          res.status(200).json(data);
+        .then(() => {
+          sendEmail(req.body.Email, randCode);
+          res.json("User saved and email sent");
         })
         .catch((error) => {
           {
@@ -54,6 +43,29 @@ router.post(
     }
   }
 );
+
+router.get("/verify/:activationCode", async (req, res) => {
+  const activationCode = req.params.activationCode;
+  let doc = await User.findOne({ ActivationCode: activationCode });
+
+  if (doc !== null) {
+    await User.updateOne(
+      { ActivationCode: activationCode },
+      { $unset: { createdAt: 1, ActivationCode: 1 }, Status: true },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          res.json(err);
+        } else {
+          console.log(result);
+          res.json("Email verified successfully");
+        }
+      }
+    );
+  } else {
+    res.json("Email verification failed");
+  }
+});
 
 router.post(
   "/login",

@@ -11,7 +11,7 @@ const refreshToken =
 const OauthClient = new google.auth.OAuth2(clientID, clientSecret, redirectURI);
 OauthClient.setCredentials({ refresh_token: refreshToken });
 
-const sendEmail = async (emailAddress) => {
+const sendEmail = async (emailAddress, activationCode) => {
   try {
     const accessToken = await OauthClient.getAccessToken();
     const transport = await nodeMailer.createTransport({
@@ -33,7 +33,7 @@ const sendEmail = async (emailAddress) => {
       subject: "Verification SchoolBag",
       html: `<h1>Please click the link below to activate your account</h1>
       <img src="https://schoolbagapp.herokuapp.com/images/logo1.png" width="500px" alt="SchoolBag"/><br>
-          <a href="http://localhost:8000/auth/verify/"><button><h3>Verify</h3></button></a>`,
+          <a href="${process.env.API}/auth/verify/${activationCode}"><button><h3>Verify</h3></button></a>`,
     };
 
     await transport.sendMail(mailOptions, (err, res) => {
