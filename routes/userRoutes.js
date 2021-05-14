@@ -3,13 +3,14 @@ const jwt = require("jsonwebtoken");
 const { nanoid } = require("nanoid");
 const bcrypt = require("bcryptjs");
 const User = require("../model/userSchema");
-const VerificationSchema = require("../model/verificationSchema");
-const auth = require("../middleware/auth");
 const {
   userValidationRules,
   validateRegistration,
-  validateLogin,
 } = require("../Validations/userValidator");
+const {
+  loginValidationRules,
+  validateLogin,
+} = require("../Validations/loginValidator");
 const sendEmail = require("../mailServer/mailSender");
 
 router.post(
@@ -70,7 +71,7 @@ router.get("/verify/:activationCode", async (req, res) => {
 
 router.post(
   "/login",
-  userValidationRules(),
+  loginValidationRules(),
   validateLogin,
   async (req, res) => {
     try {
@@ -103,14 +104,5 @@ router.post(
     }
   }
 );
-
-router.get("/get-data", auth, async (req, res) => {
-  const userEmail = req.decoded.Email;
-  const data = await User.findOne({ Email: userEmail }).select([
-    "Name",
-    "Email",
-  ]);
-  res.json(data);
-});
 
 module.exports = router;
