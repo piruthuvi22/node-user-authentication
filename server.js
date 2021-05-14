@@ -5,10 +5,13 @@ const cors = require("cors");
 require("dotenv").config();
 
 const userRoutes = require("./routes/userRoutes");
+const resetPassword = require("./routes/resetRoutes");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/auth", userRoutes);
+app.use("/account/reset", resetPassword);
 
 const uri = process.env.MONGO_URI;
 let connection = mongoose.connect(uri, {

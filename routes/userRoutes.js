@@ -1,14 +1,16 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const { nanoid } = require("nanoid");
+const bcrypt = require("bcryptjs");
 const User = require("../model/userSchema");
-const VerificationSchema = require("../model/verificationSchema");
-const auth = require("../middleware/auth");
 const {
   userValidationRules,
   validateRegistration,
-  validateLogin,
 } = require("../Validations/userValidator");
+const {
+  loginValidationRules,
+  validateLogin,
+} = require("../Validations/loginValidator");
 const sendEmail = require("../mailServer/mailSender");
 
 router.post(
@@ -29,7 +31,7 @@ router.post(
       await user
         .save()
         .then(() => {
-          sendEmail(req.body.Email, randCode);
+          sendEmail(req.body.Email, req.body.Name, randCode);
           res.json("User saved and email sent");
         })
         .catch((error) => {
@@ -69,7 +71,7 @@ router.get("/verify/:activationCode", async (req, res) => {
 
 router.post(
   "/login",
-  userValidationRules(),
+  loginValidationRules(),
   validateLogin,
   async (req, res) => {
     try {
@@ -83,7 +85,11 @@ router.post(
         );
         if (isMatch) {
           const userToken = await jwt.sign(
-            { Email: userData.Email, Name: userData.Name },
+            {
+              Email: userData.Email,
+              Name: userData.Name,
+              Username: userData.Username,
+            },
             process.env.JWT_KEY
           );
 
@@ -93,18 +99,10 @@ router.post(
         }
       }
     } catch (error) {
+      console.log(error);
       res.status(400).json(error);
     }
   }
 );
-
-router.get("/get-data", auth, async (req, res) => {
-  const userEmail = req.decoded.Email;
-  const data = await User.findOne({ Email: userEmail }).select([
-    "Name",
-    "Email",
-  ]);
-  res.json(data);
-});
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const nodeMailer = require("nodemailer");
 const { google } = require("googleapis");
 
+const emailTemplate = require("./emailTemplate");
 const clientID =
   "294751671415-qgkj1emjaf45gjri1m945v670j37t92r.apps.googleusercontent.com";
 const clientSecret = "2Ji6l_DMkoGxAOvfohU_TwVy";
@@ -11,7 +12,7 @@ const refreshToken =
 const OauthClient = new google.auth.OAuth2(clientID, clientSecret, redirectURI);
 OauthClient.setCredentials({ refresh_token: refreshToken });
 
-const sendEmail = async (emailAddress, activationCode) => {
+const sendEmail = async (emailAddress, name, activationCode) => {
   try {
     const accessToken = await OauthClient.getAccessToken();
     const transport = await nodeMailer.createTransport({
@@ -31,9 +32,7 @@ const sendEmail = async (emailAddress, activationCode) => {
       from: "SchoolBag <mycodecademypro2@gmail.com>",
       to: emailAddress,
       subject: "Verification SchoolBag",
-      html: `<h1>Please click the link below to activate your account</h1>
-      <img src="https://schoolbagapp.herokuapp.com/images/logo1.png" width="500px" alt="SchoolBag"/><br>
-          <a href="${process.env.API}/auth/verify/${activationCode}"><button><h3>Verify</h3></button></a>`,
+      html: emailTemplate(name, activationCode),
     };
 
     await transport.sendMail(mailOptions, (err, res) => {
