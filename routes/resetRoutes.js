@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 const {
   passwordValidationRules,
   validatePassword,
-} = require("../Validations/passwordValidator");
+} = require("../middleware/Validations/passwordValidator");
 
 router.post(
   "/",

@@ -1,7 +1,11 @@
 const nodeMailer = require("nodemailer");
 const { google } = require("googleapis");
 
-const emailTemplate = require("./emailTemplate");
+const {
+  VerificationEmailTemplate,
+  ResetEmailTemplate,
+} = require("./emailTemplate");
+
 const clientID =
   "294751671415-qgkj1emjaf45gjri1m945v670j37t92r.apps.googleusercontent.com";
 const clientSecret = "2Ji6l_DMkoGxAOvfohU_TwVy";
@@ -12,7 +16,41 @@ const refreshToken =
 const OauthClient = new google.auth.OAuth2(clientID, clientSecret, redirectURI);
 OauthClient.setCredentials({ refresh_token: refreshToken });
 
-const sendEmail = async (emailAddress, name, activationCode) => {
+const sendVerificationEmail = async (emailAddress, name, activationCode) => {
+  try {
+    const accessToken = await OauthClient.getAccessToken();
+    const transport = await nodeMailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: "mycodecademypro2@gmail.com",
+        clientId: clientID,
+        clientSecret: clientSecret,
+        refreshToken: refreshToken,
+        accessToken: accessToken,
+      },
+    });
+    const mailOptions = {
+      from: "SchoolBag <mycodecademypro2@gmail.com>",
+      to: emailAddress,
+      subject: "Verification SchoolBag",
+      html: "hello",
+      // html: VerificationEmailTemplate(name, activationCode),
+    };
+
+    await transport.sendMail(mailOptions, (err, res) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Email message sent");
+      }
+    });
+  } catch (error) {
+    return error;
+  }
+};
+
+const sendResetEmail = async (emailAddress, name, resetCode) => {
   try {
     const accessToken = await OauthClient.getAccessToken();
     const transport = await nodeMailer.createTransport({
@@ -32,7 +70,7 @@ const sendEmail = async (emailAddress, name, activationCode) => {
       from: "SchoolBag <mycodecademypro2@gmail.com>",
       to: emailAddress,
       subject: "Verification SchoolBag",
-      html: emailTemplate(name, activationCode),
+      html: ResetEmailTemplate(name, resetCode),
     };
 
     await transport.sendMail(mailOptions, (err, res) => {
@@ -47,4 +85,5 @@ const sendEmail = async (emailAddress, name, activationCode) => {
   }
 };
 
-module.exports = sendEmail;
+// module.exports = { sendVerificationEmail, sendResetEmail };
+module.exports = sendVerificationEmail;

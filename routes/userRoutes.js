@@ -6,12 +6,12 @@ const User = require("../model/userSchema");
 const {
   userValidationRules,
   validateRegistration,
-} = require("../Validations/userValidator");
+} = require("../middleware/Validations/userValidator");
 const {
   loginValidationRules,
   validateLogin,
-} = require("../Validations/loginValidator");
-const sendEmail = require("../mailServer/mailSender");
+} = require("../middleware/Validations/loginValidator");
+const sendVerificationEmail = require("../mailServer/mailSender");
 
 router.post(
   "/register",
@@ -31,15 +31,14 @@ router.post(
       await user
         .save()
         .then(() => {
-          sendEmail(req.body.Email, req.body.Name, randCode);
+          sendVerificationEmail(req.body.Email, req.body.Name, randCode);
           res.json("User saved and email sent");
         })
-        .catch((error) => {
-          {
+        .catch(
+          (error) =>
             error.code === 11000 &&
-              res.json(`${Object.keys(error.keyValue)} already exist`);
-          }
-        });
+            res.json(`${Object.keys(error.keyValue)} already exist`)
+        );
     } catch (error) {
       res.status(400).json(error);
     }
