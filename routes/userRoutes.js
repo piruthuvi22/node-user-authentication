@@ -11,7 +11,7 @@ const {
   loginValidationRules,
   validateLogin,
 } = require("../middleware/Validations/loginValidator");
-const sendVerificationEmail = require("../mailServer/mailSender");
+const { sendVerificationEmail } = require("../mailServer/mailSender");
 
 router.post(
   "/register",

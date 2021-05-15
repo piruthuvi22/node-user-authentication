@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/auth", userRoutes);
-app.use("/account/reset", resetPassword);
+app.use("/account", resetPassword);
 app.use("/forget-password", forgetPasswordRoutes);
 
 const uri = process.env.MONGO_URI;

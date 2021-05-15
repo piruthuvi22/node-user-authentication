@@ -2,6 +2,8 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 
 const User = require("../model/userSchema");
+const ForgetPassword = require("../model/forgetPassword");
+
 const auth = require("../middleware/auth");
 const {
   passwordValidationRules,
@@ -9,7 +11,7 @@ const {
 } = require("../middleware/Validations/passwordValidator");
 
 router.post(
-  "/",
+  "/change-password",
   auth,
   passwordValidationRules(),
   validatePassword,
@@ -26,6 +28,29 @@ router.post(
       res.json("Password updated");
     } else {
       res.json("Mismatch OldPassword");
+    }
+  }
+);
+
+router.get("/reset-password/:resetCode", (req, res) => {
+  res.send("Password reset hit");
+});
+
+router.post(
+  "/reset-password/:resetCode",
+  passwordValidationRules(),
+  validatePassword,
+  async (req, res) => {
+    const ResetCode = req.params.resetCode;
+    const data = await ForgetPassword.findOne({ ResetCode });
+    if (data !== null) {
+      const Email = data.Email;
+      const newPassword = req.hash;
+
+      await User.updateOne({ Email }, { Password: newPassword });
+      res.json("Password Reseted");
+    } else {
+      res.json("Password reset request timedout");
     }
   }
 );

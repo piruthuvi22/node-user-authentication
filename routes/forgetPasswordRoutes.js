@@ -18,7 +18,7 @@ router.post("/", emailValidationRules(), validateEmail, async (req, res) => {
     _id: 0,
   });
   if (email !== null) {
-    let randCode = nanoid(10) + Date.now();
+    let randCode = nanoid(30) + Date.now();
     const data = new ForgetPassword({
       Email,
       ResetCode: randCode,
@@ -30,7 +30,7 @@ router.post("/", emailValidationRules(), validateEmail, async (req, res) => {
         res.json("Reset email sent");
       })
       .catch(
-        (err) =>
+        (error) =>
           error.code === 11000 &&
           res.json(
             `Already reset email have sent to${Object.keys(error.keyValue)}`
