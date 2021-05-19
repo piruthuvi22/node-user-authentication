@@ -27,7 +27,7 @@ router.post("/", emailValidationRules(), validateEmail, async (req, res) => {
       .save()
       .then(() => {
         sendResetEmail(Email, email.Name, randCode);
-        res.json("Reset email sent");
+        res.json("Reset email sent this mail valid for 5 minutes");
       })
       .catch(
         (error) =>

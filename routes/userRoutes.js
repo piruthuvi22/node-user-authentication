@@ -2,6 +2,8 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const { nanoid } = require("nanoid");
 const bcrypt = require("bcryptjs");
+const path = require("path");
+
 const User = require("../model/userSchema");
 const {
   userValidationRules,
@@ -12,6 +14,7 @@ const {
   validateLogin,
 } = require("../middleware/Validations/loginValidator");
 const { sendVerificationEmail } = require("../mailServer/mailSender");
+const AccountVerifiedDone = require("../utils/accountVerifiedDone");
 
 router.post(
   "/register",
@@ -58,13 +61,12 @@ router.get("/verify/:activationCode", async (req, res) => {
           console.log(err);
           res.json(err);
         } else {
-          console.log(result);
-          res.json("Email verified successfully");
+          res.send(AccountVerifiedDone());
         }
       }
     );
   } else {
-    res.json("Email verification failed");
+    res.json("Email verification error");
   }
 });
 
@@ -94,7 +96,7 @@ router.post(
 
           res.header("JWT-KEY", userToken).json(userToken);
         } else {
-          res.status(400).json("Password not match");
+          res.status(400).json("Login error");
         }
       }
     } catch (error) {
