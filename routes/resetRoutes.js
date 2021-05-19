@@ -9,7 +9,7 @@ const {
   passwordValidationRules,
   validatePassword,
 } = require("../middleware/Validations/passwordValidator");
-
+const passForm = require("../utils/form");
 router.post(
   "/change-password",
   auth,
@@ -25,15 +25,16 @@ router.post(
     const isMatch = await bcrypt.compare(req.body.OldPassword, Password);
     if (isMatch) {
       await User.updateOne({ Email: userEmail }, { Password: newPassword });
-      res.json("Password updated");
+      res.json("Password changed");
     } else {
       res.json("Mismatch OldPassword");
     }
   }
 );
 
-router.get("/reset-password/:resetCode", (req, res) => {
-  res.send("Password reset hit");
+router.get("/reset-password", (req, res) => {
+  const activationCode = req.query["activation-code"];
+  res.send(passForm(activationCode));
 });
 
 router.post(
@@ -42,15 +43,15 @@ router.post(
   validatePassword,
   async (req, res) => {
     const ResetCode = req.params.resetCode;
-    const data = await ForgetPassword.findOne({ ResetCode });
+    const data = await ForgetPassword.findOneAndRemove({ ResetCode });
     if (data !== null) {
       const Email = data.Email;
       const newPassword = req.hash;
 
       await User.updateOne({ Email }, { Password: newPassword });
-      res.json("Password Reseted");
+      res.status(200).json("Password Reseted");
     } else {
-      res.json("Password reset request timedout");
+      res.status(408).json("No reset request found or request timedout");
     }
   }
 );

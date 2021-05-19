@@ -4,7 +4,7 @@ const { google } = require("googleapis");
 const {
   VerificationEmailTemplate,
   ResetEmailTemplate,
-} = require("./emailTemplate");
+} = require("../utils/emailTemplate");
 
 const clientID =
   "927827745982-hisl3umkhplkt359k6483mh2n3o9lcar.apps.googleusercontent.com";
