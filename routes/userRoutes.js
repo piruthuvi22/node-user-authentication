@@ -2,6 +2,7 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const { nanoid } = require("nanoid");
 const bcrypt = require("bcryptjs");
+const passport = require("passport");
 const path = require("path");
 
 const User = require("../model/userSchema");
@@ -13,6 +14,7 @@ const {
   loginValidationRules,
   validateLogin,
 } = require("../middleware/Validations/loginValidator");
+const { ensureAuth, ensureGuest } = require("../middleware/auth-google");
 const { sendVerificationEmail } = require("../mailServer/mailSender");
 const AccountVerifiedDone = require("../utils/accountVerifiedDone");
 
@@ -105,5 +107,33 @@ router.post(
     }
   }
 );
+
+router.get("/dashboard", ensureAuth, (req, res) => {
+  res.send(`<h1>dashboard</h1>
+  <h2>Hello ${req.user.Name}</h2>
+  `);
+});
+
+router.get("/", ensureGuest, (req, res) => {
+  res.send("<a href='auth/google'>Login with google </a>");
+});
+
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  async (req, res) => {
+    await res.redirect("/auth/dashboard");
+  }
+);
+
+router.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/auth");
+});
 
 module.exports = router;

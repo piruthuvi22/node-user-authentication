@@ -6,12 +6,10 @@ const {
   ResetEmailTemplate,
 } = require("../utils/emailTemplate");
 
-const clientID =
-  "927827745982-hisl3umkhplkt359k6483mh2n3o9lcar.apps.googleusercontent.com";
-const clientSecret = "Ui9YehvafSdAbFmHgIp8IGmw";
-const redirectURI = "https://developers.google.com/oauthplayground";
-const refreshToken =
-  "1//04wTVQ8gPe0LRCgYIARAAGAQSNwF-L9IrJEc3H9QN3IsK-PfC2MRvFXtFagUpQSv61B75kqLM-lOLQZR-hAE2jaPR1E42VdYV3ek";
+const clientID = process.env.CLIENT_ID;
+const clientSecret = process.env.CLIENT_SECRET;
+const redirectURI = process.env.REDIRECT_URI;
+const refreshToken = process.env.REFRESH_TOKEN;
 
 const OauthClient = new google.auth.OAuth2(clientID, clientSecret, redirectURI);
 OauthClient.setCredentials({ refresh_token: refreshToken });
@@ -31,7 +29,7 @@ const sendVerificationEmail = async (emailAddress, name, activationCode) => {
       },
     });
     const mailOptions = {
-      from: "SchoolBag <mycodecademypro2@gmail.com>",
+      from: "SchoolBag <noreply.mycodecademypro2@gmail.com>",
       to: emailAddress,
       subject: "Verification SchoolBag",
       html: VerificationEmailTemplate(name, activationCode),

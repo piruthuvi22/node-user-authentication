@@ -22,15 +22,17 @@ const UserSchema = mongoose.Schema({
   Status: {
     type: Boolean,
     default: false,
+    required: false,
   },
   createdAt: {
     type: Date,
     expires: "5min",
     default: Date.now,
+    required: false,
   },
   ActivationCode: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 
