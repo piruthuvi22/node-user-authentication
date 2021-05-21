@@ -111,6 +111,7 @@ router.post(
 router.get("/dashboard", ensureAuth, (req, res) => {
   res.send(`<h1>dashboard</h1>
   <h2>Hello ${req.user.Name}</h2>
+  <a href="/auth/logout">Logout</a>
   `);
 });
 
