@@ -37,15 +37,15 @@ router.post(
         .save()
         .then(() => {
           sendVerificationEmail(req.body.Email, req.body.Name, randCode);
-          res.json("User saved and email sent");
+          res.status(201).json("User saved and email sent");
         })
         .catch(
           (error) =>
             error.code === 11000 &&
-            res.json(`${Object.keys(error.keyValue)} already exist`)
+            res.status(409).json(`${Object.keys(error.keyValue)} already exist`)
         );
     } catch (error) {
-      res.status(400).json(error);
+      res.status(500).status(400).json(error);
     }
   }
 );
@@ -61,14 +61,14 @@ router.get("/verify/:activationCode", async (req, res) => {
       (err, result) => {
         if (err) {
           console.log(err);
-          res.json(err);
+          res.status(422).json(err);
         } else {
           res.send(AccountVerifiedDone());
         }
       }
     );
   } else {
-    res.json("Email verification error");
+    res.status(409).json("Your account already verified");
   }
 });
 
@@ -80,7 +80,7 @@ router.post(
     try {
       let userData = await User.findOne({ Email: req.body.Email });
       if (!userData) {
-        res.status(400).json("User not found");
+        res.status(404).json("User not found");
       } else {
         const isMatch = await bcrypt.compare(
           req.body.Password,
@@ -98,12 +98,12 @@ router.post(
 
           res.header("JWT-KEY", userToken).json(userToken);
         } else {
-          res.status(400).json("Login error");
+          res.status(401).json("Incorrect email or password");
         }
       }
     } catch (error) {
       console.log(error);
-      res.status(400).json(error);
+      res.status(500).json(error);
     }
   }
 );

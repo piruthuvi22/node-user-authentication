@@ -27,17 +27,19 @@ router.post("/", emailValidationRules(), validateEmail, async (req, res) => {
       .save()
       .then(() => {
         sendResetEmail(Email, email.Name, randCode);
-        res.json("Reset email sent this mail valid for 5 minutes");
+        res.status(200).json("Reset email sent this mail valid for 5 minutes");
       })
       .catch(
         (error) =>
           error.code === 11000 &&
-          res.json(
-            `Already reset email have sent to${Object.keys(error.keyValue)}`
-          )
+          res
+            .status(102)
+            .json(
+              `Already reset email have sent to${Object.keys(error.keyValue)}`
+            )
       );
   } else {
-    res.json("Email not found");
+    res.status(404).json("User not found");
   }
 });
 

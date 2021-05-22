@@ -9,9 +9,9 @@ const googlePassport = (passport) => {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: "/auth/google/callback",
+        clientID: process.env.Google_Client_ID,
+        clientSecret: process.env.Google_Client_SECRET,
+        callbackURL: process.env.Google_Redirect_URI,
         // profileFields: ["name"],
       },
       async (accessToken, refreshToken, profile, done) => {
@@ -23,13 +23,30 @@ const googlePassport = (passport) => {
           Name: displayName,
           Username: username + "_" + userRandomString,
           Email: email,
-          Password: " ",
+          Status: true,
           createdAt: "",
         };
         try {
           let user = await User.findOne({ Email: email });
           if (user) {
-            done(null, user);
+            if (user.Status == false) {
+              await User.updateOne(
+                { Email: email },
+                {
+                  $unset: { createdAt: 1, ActivationCode: 1, Password: 1 },
+                  Status: true,
+                },
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    done(null, user);
+                  }
+                }
+              );
+            } else {
+              done(null, user);
+            }
           } else {
             user = await User.create(newUser);
             done(null, user);
@@ -56,9 +73,9 @@ const facebookPassport = (passport) => {
   passport.use(
     new FacebookStrategy(
       {
-        clientID: "303547561493723",
-        clientSecret: "c804fab5b1191bcb32644dcc3745528f",
-        callbackURL: "/auth/facebook/callback",
+        clientID: process.env.FB_Client_ID,
+        clientSecret: process.env.FB_Client_SECRET,
+        callbackURL: process.env.FB_Redirect_URI,
         // profileFields: [],
         profileFields: ["id", "displayName", , "email", "gender"],
       },
