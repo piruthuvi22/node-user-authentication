@@ -23,14 +23,31 @@ const googlePassport = (passport) => {
           Name: displayName,
           Username: username + "_" + userRandomString,
           Email: email,
-          Password: " ",
+          Status: true,
           createdAt: "",
         };
         try {
           let user = await User.findOne({ Email: email });
-          console.log(user.Status);
           if (user) {
-            done(null, user);
+            if (user.Status == false) {
+              await User.updateOne(
+                { Email: email },
+                {
+                  $unset: { createdAt: 1, ActivationCode: 1, Password: 1 },
+                  Status: true,
+                },
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                    res.json(err);
+                  } else {
+                    done(null, user);
+                  }
+                }
+              );
+            } else {
+              done(null, user);
+            }
           } else {
             user = await User.create(newUser);
             done(null, user);

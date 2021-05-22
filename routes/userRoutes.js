@@ -68,7 +68,7 @@ router.get("/verify/:activationCode", async (req, res) => {
       }
     );
   } else {
-    res.json("Email verification error");
+    res.json("Your account already verified");
   }
 });
 
