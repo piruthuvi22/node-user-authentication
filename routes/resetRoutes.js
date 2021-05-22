@@ -25,9 +25,9 @@ router.post(
     const isMatch = await bcrypt.compare(req.body.OldPassword, Password);
     if (isMatch) {
       await User.updateOne({ Email: userEmail }, { Password: newPassword });
-      res.json("Password changed");
+      res.status(200).json("Password changed");
     } else {
-      res.json("Mismatch OldPassword");
+      res.status(401).json("Mismatch OldPassword");
     }
   }
 );

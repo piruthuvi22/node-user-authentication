@@ -39,7 +39,6 @@ const googlePassport = (passport) => {
                 (err, result) => {
                   if (err) {
                     console.log(err);
-                    res.json(err);
                   } else {
                     done(null, user);
                   }
