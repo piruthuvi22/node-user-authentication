@@ -6,10 +6,10 @@ const {
   ResetEmailTemplate,
 } = require("../utils/emailTemplate");
 
-const clientID = process.env.CLIENT_ID;
-const clientSecret = process.env.CLIENT_SECRET;
-const redirectURI = process.env.REDIRECT_URI;
-const refreshToken = process.env.REFRESH_TOKEN;
+const clientID = process.env.Google_Client_ID;
+const clientSecret = process.env.Google_Client_SECRET;
+const redirectURI = process.env.Google_Redirect_URI;
+const refreshToken = process.env.Google_Refresh_TOKEN;
 
 const OauthClient = new google.auth.OAuth2(clientID, clientSecret, redirectURI);
 OauthClient.setCredentials({ refresh_token: refreshToken });
