@@ -11,7 +11,9 @@ const userRoutes = require("./routes/userRoutes");
 const resetPassword = require("./routes/resetRoutes");
 const forgetPasswordRoutes = require("./routes/forgetPasswordRoutes");
 
-require("./config/passport")(passport);
+const { googlePassport, facebookPassport } = require("./config/passport");
+googlePassport(passport);
+facebookPassport(passport);
 
 app.use(
   session({
