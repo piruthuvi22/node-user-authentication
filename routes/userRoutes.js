@@ -18,6 +18,20 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth-google");
 const { sendVerificationEmail } = require("../mailServer/mailSender");
 const AccountVerifiedDone = require("../utils/accountVerifiedDone");
 
+router.post("/register/check", async (req, res) => {
+  try {
+    await User.exists({ Username: req.body.Username }, (err, doc) => {
+      if (err) {
+        console.log(err);
+      } else {
+        doc === true ? res.status(401).json(doc) : res.status(200).json(doc);
+      }
+    });
+  } catch (error) {
+    res.json({ error: error });
+  }
+});
+
 router.post(
   "/register",
   userValidationRules(),
@@ -37,7 +51,11 @@ router.post(
         .save()
         .then(() => {
           sendVerificationEmail(req.body.Email, req.body.Name, randCode);
-          res.status(201).json("User saved and email sent");
+          res
+            .status(201)
+            .json(
+              "Account created. We have sent you a verification email sent."
+            );
         })
         .catch(
           (error) =>
@@ -89,9 +107,10 @@ router.post(
         if (isMatch) {
           const userToken = await jwt.sign(
             {
-              Email: userData.Email,
               Name: userData.Name,
               Username: userData.Username,
+              Email: userData.Email,
+              Role: userData.Role,
             },
             process.env.JWT_KEY
           );

@@ -3,7 +3,9 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const passport = require("passport");
-const session = require("express-session");
+// const session = require("express-session");
+const cookieSession = require("cookie-session");
+
 const MongoStore = require("connect-mongo");
 require("dotenv").config();
 
@@ -15,14 +17,22 @@ const { googlePassport, facebookPassport } = require("./config/passport");
 googlePassport(passport);
 facebookPassport(passport);
 
+// app.use(
+//   session({
+//     secret: "keyboard cat",
+//     resave: true,
+//     saveUninitialized: true,
+//     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+//   })
+// );
+
 app.use(
-  session({
-    secret: "keyboard cat",
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+  cookieSession({
+    maxAge: 7200000,
+    keys: ["mysecret1", "mysecret2"],
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
