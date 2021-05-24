@@ -30,7 +30,7 @@ const UserSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    expires: "5min",
+    expires: "15min",
     default: Date.now,
     required: false,
   },

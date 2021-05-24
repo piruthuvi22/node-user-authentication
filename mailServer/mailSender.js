@@ -1,11 +1,12 @@
 const nodeMailer = require("nodemailer");
 const { google } = require("googleapis");
+const path = require("path");
 
 const {
   VerificationEmailTemplate,
   ResetEmailTemplate,
 } = require("../utils/emailTemplate");
-
+console.log(process.env.INIT_CWD);
 const clientID = process.env.Google_Client_ID;
 const clientSecret = process.env.Google_Client_SECRET;
 const redirectURI = process.env.Google_Redirect_URI;
@@ -27,12 +28,22 @@ const sendVerificationEmail = async (emailAddress, name, activationCode) => {
         refreshToken: refreshToken,
         accessToken: accessToken,
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
     const mailOptions = {
       from: "SchoolBag <noreply.mycodecademypro2@gmail.com>",
       to: emailAddress,
       subject: "Verification SchoolBag",
       html: VerificationEmailTemplate(name, activationCode),
+      // attachments: [
+      //   {
+      //     filename: "logo.png",
+      //     path: process.env.INIT_CWD + "/assets/logo.png",
+      //     cid: "unique@kreata.ee", //same cid value as in the html img src
+      //   },
+      // ],
     };
 
     await transport.sendMail(mailOptions, (err, res) => {
