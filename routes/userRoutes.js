@@ -105,9 +105,15 @@ router.post(
           userData.Password
         );
         if (isMatch) {
+          const userObj = Object.assign({
+            Name: userData.Name,
+            Username: userData.Username,
+            Email: userData.Email,
+            Role: userData.Role,
+          });
+
           const userToken = await jwt.sign(
             {
-              Name: userData.Name,
               Username: userData.Username,
               Email: userData.Email,
               Role: userData.Role,
@@ -115,7 +121,7 @@ router.post(
             process.env.JWT_KEY
           );
 
-          res.header("JWT-KEY", userToken).json(userToken);
+          res.header("JWT-KEY", userToken).status(200).json(userObj);
         } else {
           res.status(401).json("Incorrect email or password");
         }

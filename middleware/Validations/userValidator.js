@@ -3,7 +3,9 @@ const { body, validationResult } = require("express-validator");
 const userValidationRules = () => {
   return [
     body("Email").isEmail(),
-    // body("Password"),
+    body("Username").matches(
+      "^(?=.{3,15}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$"
+    ),
     body("Password").matches(
       "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}"
     ),

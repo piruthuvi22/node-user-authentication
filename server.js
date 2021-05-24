@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const passport = require("passport");
+const path = require("path");
 // const session = require("express-session");
 const cookieSession = require("cookie-session");
 
@@ -32,11 +33,12 @@ app.use(
     keys: ["mysecret1", "mysecret2"],
   })
 );
-
+// console.log(process.env.INIT_CWD);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// app.use("/static", express.static(path.join(__dirname, "assets")));
 app.use(cors());
 app.use("/auth", userRoutes);
 app.use("/account", resetPassword);
