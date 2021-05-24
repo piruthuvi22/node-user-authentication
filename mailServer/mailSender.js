@@ -27,6 +27,9 @@ const sendVerificationEmail = async (emailAddress, name, activationCode) => {
         refreshToken: refreshToken,
         accessToken: accessToken,
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
     const mailOptions = {
       from: "SchoolBag <noreply.mycodecademypro2@gmail.com>",
