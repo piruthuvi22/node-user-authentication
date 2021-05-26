@@ -28,11 +28,16 @@ const UserSchema = mongoose.Schema({
     default: false,
     required: false,
   },
-  createdAt: {
+  // createdAt: {
+  //   type: Date,
+  //   expires: "15min",
+  //   default: Date.now,
+  //   required: false,
+  // },
+  expireAt: {
     type: Date,
-    expires: "15min",
-    default: Date.now,
-    required: false,
+    expires: 300,
+    // default: Date.now,
   },
   ActivationCode: {
     type: String,
