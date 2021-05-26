@@ -6,7 +6,6 @@ const {
   VerificationEmailTemplate,
   ResetEmailTemplate,
 } = require("../utils/emailTemplate");
-console.log(process.env.INIT_CWD);
 const clientID = process.env.Google_Client_ID;
 const clientSecret = process.env.Google_Client_SECRET;
 const redirectURI = process.env.Google_Redirect_URI;
@@ -33,9 +32,9 @@ const sendVerificationEmail = async (emailAddress, name, activationCode) => {
       },
     });
     const mailOptions = {
-      from: "SchoolBag <noreply.mycodecademypro2@gmail.com>",
+      from: "Security House <noreply.mycodecademypro2@gmail.com>",
       to: emailAddress,
-      subject: "Verification SchoolBag",
+      subject: "Verification Security House",
       html: VerificationEmailTemplate(name, activationCode),
       // attachments: [
       //   {
@@ -73,9 +72,9 @@ const sendResetEmail = async (emailAddress, name, resetCode) => {
       },
     });
     const mailOptions = {
-      from: "SchoolBag <mycodecademypro2@gmail.com>",
+      from: "Security House <mycodecademypro2@gmail.com>",
       to: emailAddress,
-      subject: "Reset Password SchoolBag",
+      subject: "Reset Password Security House",
       html: ResetEmailTemplate(name, resetCode),
     };
 
