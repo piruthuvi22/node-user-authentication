@@ -4,6 +4,7 @@ const { nanoid } = require("nanoid");
 const bcrypt = require("bcryptjs");
 const path = require("path");
 const { google } = require("googleapis");
+const fetch = require("node-fetch");
 
 const User = require("../model/userSchema");
 const {
@@ -209,7 +210,7 @@ router.post("/google", async (req, res) => {
 
           const newUser = {
             Name: name,
-            Username: username + userRandomString,
+            Username: username + "_" + userRandomString,
             Email: email,
             Status: true,
             Role: "user",
@@ -246,4 +247,86 @@ router.post("/google", async (req, res) => {
   }
 });
 
+router.post("/facebook", async (req, res) => {
+  const { accessToken, userID } = req.body;
+  console.log(accessToken, userID);
+
+  const fbGraphUrl = ` https://graph.facebook.com/${userID}/?fields=name,email&access_token=${accessToken}`;
+  fetch(fbGraphUrl).then((response) =>
+    response.json().then(async (response) => {
+      const { name, email } = response;
+      try {
+        let user = await User.findOne({ Email: email });
+        if (user) {
+          const userObj = Object.assign({
+            Name: user.Name,
+            Username: user.Username,
+            Email: user.Email,
+            Role: user.Role,
+          });
+          const payload = {
+            Username: user.Username,
+            Email: user.Email,
+            Role: user.Role,
+          };
+
+          const userToken = jwt.sign(payload, process.env.JWT_KEY);
+
+          if (user.Status == false) {
+            await User.updateOne(
+              { Email: user.Email },
+              {
+                $unset: { createdAt: 1, ActivationCode: 1, Password: 1 },
+                Status: true,
+              },
+              async (err, result) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  // let user to login
+                  res.status(200).json({ userObj, userToken });
+                }
+              }
+            );
+          } else {
+            res.status(200).json({ userObj, userToken });
+          }
+        } else {
+          // create new user and let to login
+          let username = name.replace(/ /g, "");
+          let userRandomString = nanoid(5);
+
+          const newUser = {
+            Name: name,
+            Username: username + "_" + userRandomString,
+            Email: email,
+            Status: true,
+            Role: "user",
+            createdAt: "",
+          };
+
+          const userObj = Object.assign({
+            Name: newUser.Name,
+            Username: newUser.Username,
+            Email: newUser.Email,
+            Role: newUser.Role,
+          });
+
+          const payload = {
+            Username: newUser.Username,
+            Email: newUser.Email,
+            Role: newUser.Role,
+          };
+
+          await User.create(newUser).then(() => {
+            const userToken = jwt.sign(payload, process.env.JWT_KEY);
+            res.status(200).json({ userObj, userToken });
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })
+  );
+});
 module.exports = router;
