@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-const passport = require("passport");
 const path = require("path");
 // const session = require("express-session");
 const cookieSession = require("cookie-session");
@@ -13,10 +12,6 @@ require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
 const resetPassword = require("./routes/resetRoutes");
 const forgetPasswordRoutes = require("./routes/forgetPasswordRoutes");
-
-const { googlePassport, facebookPassport } = require("./config/passport");
-googlePassport(passport);
-facebookPassport(passport);
 
 // app.use(
 //   session({
@@ -34,8 +29,7 @@ app.use(
   })
 );
 // console.log(process.env.INIT_CWD);
-app.use(passport.initialize());
-app.use(passport.session());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use("/static", express.static(path.join(__dirname, "assets")));
