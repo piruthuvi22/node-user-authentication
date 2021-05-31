@@ -21,7 +21,7 @@ const sendVerificationEmail = async (emailAddress, name, activationCode) => {
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: "mycodecademypro2@gmail.com",
+        user: "se.house.png@gmail.com",
         clientId: clientID,
         clientSecret: clientSecret,
         refreshToken: refreshToken,
@@ -32,7 +32,7 @@ const sendVerificationEmail = async (emailAddress, name, activationCode) => {
       },
     });
     const mailOptions = {
-      from: "Security House <noreply.mycodecademypro2@gmail.com>",
+      from: "Security House <noreply.se.house.png@gmail.com>",
       to: emailAddress,
       subject: "Verification Security House",
       html: VerificationEmailTemplate(name, activationCode),
@@ -49,7 +49,7 @@ const sendVerificationEmail = async (emailAddress, name, activationCode) => {
       if (err) {
         console.log(err);
       } else {
-        console.log("Email message sent");
+        console.log("Verification message sent to " + emailAddress);
       }
     });
   } catch (error) {
@@ -64,7 +64,7 @@ const sendResetEmail = async (emailAddress, name, resetCode) => {
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: "mycodecademypro2@gmail.com",
+        user: "se.house.png@gmail.com",
         clientId: clientID,
         clientSecret: clientSecret,
         refreshToken: refreshToken,
@@ -72,7 +72,7 @@ const sendResetEmail = async (emailAddress, name, resetCode) => {
       },
     });
     const mailOptions = {
-      from: "Security House <mycodecademypro2@gmail.com>",
+      from: "Security House <se.house.png@gmail.com>",
       to: emailAddress,
       subject: "Reset Password Security House",
       html: ResetEmailTemplate(name, resetCode),
@@ -82,7 +82,7 @@ const sendResetEmail = async (emailAddress, name, resetCode) => {
       if (err) {
         console.log(err);
       } else {
-        console.log("Email message sent");
+        console.log("Reset email sent to " + emailAddress);
       }
     });
   } catch (error) {
