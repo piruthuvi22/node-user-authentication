@@ -17,7 +17,7 @@ const {
 const zohoUsername = process.env.ZOHO_USERNAME;
 const zohoPassword = process.env.ZOHO_PASSWORD;
 
-const transport = await nodeMailer.createTransport({
+const transport = nodeMailer.createTransport({
   // service: "gmail",
   host: "smtppro.zoho.com",
   port: 587,

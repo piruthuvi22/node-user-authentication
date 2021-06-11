@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 
 const User = require("../model/userSchema");
 const ForgetPassword = require("../model/forgetPassword");
+const upload = require("../middleware/storage");
 
 const auth = require("../middleware/auth");
 const {
@@ -10,6 +11,7 @@ const {
   validatePassword,
 } = require("../middleware/Validations/passwordValidator");
 const passForm = require("../utils/form");
+
 router.post(
   "/change-password",
   auth,
@@ -53,6 +55,28 @@ router.post(
     } else {
       res.status(408).json("No reset request found or request timedout");
     }
+  }
+);
+
+router.patch(
+  "/update-profile",
+  upload.single("profile-img"),
+  auth,
+  (req, res) => {
+    const body = Object.assign({}, req.body);
+    let obj = {};
+    body.hasOwnProperty("school") && (obj.school = req.body.school);
+    body.hasOwnProperty("name") && (obj.name = req.body.name);
+    body.hasOwnProperty("email") && (obj.email = req.body.email);
+    body.hasOwnProperty("year") && (obj.year = req.body.year);
+    body.hasOwnProperty("nickname") && (obj.nickname = req.body.nickname);
+    if (req.file !== undefined) {
+      console.log(obj); // update fields
+      console.log(req.file.path); // image path
+    } else {
+      console.log(obj); // update fields
+    }
+    res.end();
   }
 );
 
