@@ -9,6 +9,7 @@ require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
 const resetPassword = require("./routes/resetRoutes");
 const forgetPasswordRoutes = require("./routes/forgetPasswordRoutes");
+const checkIdentity = require("./routes/checkIdentity");
 
 // app.use(
 //   cookieSession({
@@ -23,6 +24,7 @@ app.use(cors({ origin: process.env.client, withCredentials: true }));
 app.use("/auth", userRoutes);
 app.use("/account", resetPassword);
 app.use("/forget-password", forgetPasswordRoutes);
+app.use("/check-identity", checkIdentity);
 
 const uri = process.env.MONGO_URI;
 let connection = mongoose.connect(uri, {
