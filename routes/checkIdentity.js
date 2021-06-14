@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../model/userSchema");
 
 // /check-identity
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   // get email,password from company service
   const email = req.body.email;
   const password = req.body.password;
