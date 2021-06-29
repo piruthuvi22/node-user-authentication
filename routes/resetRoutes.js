@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
-
+const fs = require("fs");
+const { promisify } = require("util");
 const User = require("../model/userSchema");
 const ForgetPassword = require("../model/forgetPassword");
 const upload = require("../middleware/storage");
@@ -11,6 +12,7 @@ const {
   validatePassword,
 } = require("../middleware/Validations/passwordValidator");
 const passForm = require("../utils/form");
+const unlinkAsync = promisify(fs.unlink);
 
 router.post(
   "/change-password",
@@ -65,19 +67,40 @@ router.patch(
   (req, res) => {
     const body = Object.assign({}, req.body);
     let obj = {};
-    body.hasOwnProperty("school") && (obj.school = req.body.school);
-    body.hasOwnProperty("name") && (obj.name = req.body.name);
-    body.hasOwnProperty("email") && (obj.email = req.body.email);
-    body.hasOwnProperty("year") && (obj.year = req.body.year);
-    body.hasOwnProperty("nickname") && (obj.nickname = req.body.nickname);
-    if (req.file !== undefined) {
-      console.log(obj); // update fields
-      console.log(req.file.path); // image path
+    body.hasOwnProperty("email") && (obj.email = req.body.email); // Other profile info to update
+    const userEmail = req.decoded.Email;
+    if (req.isFileError) {
+      res.status(415).json("File type is not supported");
     } else {
-      console.log(obj); // update fields
+      if (req.file !== undefined) {
+        console.log(obj); // update fields
+        User.updateOne(
+          { Email: userEmail },
+          { Picture: req.file.path },
+          (err, done) => {
+            if (err) {
+              res.status(500).json(err);
+            } else {
+              res.status(200).json("Profile updated successfully");
+            }
+          }
+        );
+      } else {
+        console.log(obj); // update fields
+        res.status(200).json("Profile updated successfully2");
+      }
     }
-    res.end();
   }
 );
 
+router.delete("/remove-profile", (req, res) => {
+  const path = req.body.path;
+  fs.unlink(path, (err) => {
+    if (err) {
+      res.status(500).json({ "Something went wrong": err });
+    } else {
+      res.status(200).json("Removed");
+    }
+  });
+});
 module.exports = router;
