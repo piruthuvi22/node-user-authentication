@@ -23,6 +23,10 @@ const UserSchema = mongoose.Schema({
     type: String,
     default: "user",
   },
+  Picture: {
+    type: String,
+    default: "/public/profile/profile.png",
+  },
   Status: {
     type: Boolean,
     default: false,
